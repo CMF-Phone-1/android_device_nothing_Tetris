@@ -242,6 +242,7 @@ PRODUCT_PACKAGES += \
     NcmTetheringOverlay
 
 PRODUCT_PACKAGES += \
+    ApertureResTarget \
     SettingsResTarget \
     SystemUIResTarget
 
