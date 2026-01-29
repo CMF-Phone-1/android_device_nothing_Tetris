@@ -46,6 +46,8 @@ ro.postinstall.fstab.prefix=/product
 
 # RKP
 remote_provisioning.hostname=remoteprovisioning.googleapis.com
+remote_provisioning.tee.rkp_only=1
+remote_provisioning.strongbox.rkp_only=1
 
 # Voice assitant
 ro.opa.eligible_device=true
