@@ -484,7 +484,7 @@
       "PowerHint": "EXPENSIVE_RENDERING",
       "Node": "MemFreq",
       "Duration": 0,
-      "Value": "3200000000"
+      "Value": "4266000000"
     },
     {
       "PowerHint": "EXPENSIVE_RENDERING",
