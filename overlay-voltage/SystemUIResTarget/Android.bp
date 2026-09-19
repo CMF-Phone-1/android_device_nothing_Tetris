@@ -4,6 +4,6 @@
 //
 
 runtime_resource_overlay {
-    name: "LineageSettingsProviderResTarget",
+    name: "SystemUIResTarget",
     product_specific: true,
 }

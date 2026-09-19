@@ -4,4 +4,4 @@
 #
 
 PRODUCT_MAKEFILES := \
-    $(LOCAL_DIR)/bliss_Tetris.mk
+    $(LOCAL_DIR)/voltage_Tetris.mk

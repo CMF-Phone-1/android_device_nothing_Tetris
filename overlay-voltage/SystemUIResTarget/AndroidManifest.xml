@@ -4,8 +4,8 @@
      SPDX-License-Identifier: Apache-2.0
 -->
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-          package="lineageos.platform.overlay.lineage.target">
-    <overlay android:targetPackage="lineageos.platform"
+          package="com.android.systemui.overlay.target">
+    <overlay android:targetPackage="com.android.systemui"
              android:isStatic="true"
              android:priority="350" />
 </manifest>
