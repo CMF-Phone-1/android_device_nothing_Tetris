@@ -203,6 +203,10 @@ PRODUCT_PACKAGES += \
 $(call soong_config_set_bool,livedisplay_sysfs,enable_se,true)
 $(call soong_config_set,livedisplay_sysfs,se_path,/sys/panel_feature/hbm_mode)
 
+# Logtag
+PRODUCT_SYSTEM_PROPERTIES += \
+    persist.log.tag.surfaceflinger=S
+
 # Media
 PRODUCT_PACKAGES += \
     android.hardware.media.bufferpool2-V2-ndk.vendor \
