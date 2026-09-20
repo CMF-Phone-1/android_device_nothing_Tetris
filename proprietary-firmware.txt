@@ -1,4 +1,5 @@
-# Firmware - from Tetris_B4.1-260615-1652
+# All proprietary files from this list, unless pinned and noted otherwise,
+# are from Nothing CMF Phone (1) (Tetris_B4.1-260615-1652).
 
 apusys.img;AB
 ccu.img;AB
@@ -8,7 +9,7 @@ connsys_wifi.img;AB
 dpm.img;AB
 gpueb.img;AB
 gz.img;AB
-lk.img;AB
+lk.img;AB|09fc66f5169f5b45e4091b1910a800f50c8c87d9
 logo.img;AB
 mcf_ota.img;AB
 mcupm.img;AB
