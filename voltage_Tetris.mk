@@ -17,6 +17,7 @@ $(call inherit-product, vendor/voltage/config/common_full_phone.mk)
 TARGET_BOOT_ANIMATION_RES := 1920
 
 # Voltage Flags
+VOLTAGE_BUILD_TYPE := OFFICIAL
 TARGET_FACE_UNLOCK_SUPPORTED := true
 EXTRA_UDFPS_ANIMATIONS := true
 
