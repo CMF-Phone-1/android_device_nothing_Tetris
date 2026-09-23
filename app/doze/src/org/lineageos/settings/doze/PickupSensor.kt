@@ -12,7 +12,6 @@ import android.hardware.SensorEventListener
 import android.hardware.SensorManager
 import android.os.PowerManager
 import android.os.SystemClock
-import android.util.Log
 import android.view.Display
 
 import java.util.concurrent.Executors
@@ -29,9 +28,9 @@ class PickupSensor(
     private val executorService = Executors.newSingleThreadExecutor()
     private var entryTimestamp = 0L
     private var wasUpward = false
+    private var isEnabled = false
 
     override fun onSensorChanged(event: SensorEvent) {
-        if (DEBUG) Log.d(TAG, "Got sensor event: ${event.values[0]}")
         val value = event.values[0]
         if (value == 1.0f) {
             wasUpward = true
@@ -43,7 +42,7 @@ class PickupSensor(
                     entryTimestamp = SystemClock.elapsedRealtime()
                     if (Utils.isPickUpSetToWake(context)) {
                         wakeLock.acquire(WAKELOCK_TIMEOUT_MS)
-                        powerManager.wakeUpWithProximityCheck(
+                        powerManager.wakeUp(
                             SystemClock.uptimeMillis(),
                             PowerManager.WAKE_REASON_GESTURE,
                             TAG,
@@ -60,19 +59,18 @@ class PickupSensor(
     override fun onAccuracyChanged(sensor: Sensor, accuracy: Int) {}
 
     fun enable() {
-        if (sensor != null) {
-            Log.d(TAG, "Enabling")
+        if (sensor != null && !isEnabled) {
+            isEnabled = true
             executorService.submit {
                 entryTimestamp = SystemClock.elapsedRealtime()
                 sensorManager.registerListener(this, sensor, SensorManager.SENSOR_DELAY_NORMAL)
             }
         }
-
     }
 
     fun disable() {
-        if (sensor != null) {
-            Log.d(TAG, "Disabling")
+        if (sensor != null && isEnabled) {
+            isEnabled = false
             executorService.submit {
                 sensorManager.unregisterListener(this, sensor)
                 wasUpward = false
@@ -82,7 +80,6 @@ class PickupSensor(
 
     companion object {
         private const val TAG = "PickupSensor"
-        private const val DEBUG = false
 
         private const val MIN_PULSE_INTERVAL_MS = 2500L
         private const val WAKELOCK_TIMEOUT_MS = 300L

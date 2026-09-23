@@ -31,22 +31,31 @@ object Utils {
     const val GESTURE_PICK_UP_KEY = "gesture_pick_up_type"
     const val GESTURE_POCKET_KEY = "gesture_pocket"
 
-    private fun startService(context: Context) {
+    // VoltageOS / AOSP settings keys
+    const val DOZE_PICK_UP_GESTURE_AMBIENT = "doze_pick_up_gesture_ambient"
+    const val POCKET_JUDGE = "pocket_judge"
+
+    fun startService(context: Context) {
         Log.d(TAG, "Starting service")
-        context.startServiceAsUser(Intent(context, DozeService::class.java), UserHandle.CURRENT)
+        try {
+            context.startServiceAsUser(Intent(context, DozeService::class.java), UserHandle.CURRENT)
+        } catch (e: Exception) {
+            Log.e(TAG, "Failed to start DozeService", e)
+        }
     }
 
-    private fun stopService(context: Context) {
+    fun stopService(context: Context) {
         Log.d(TAG, "Stopping service")
-        context.stopServiceAsUser(Intent(context, DozeService::class.java), UserHandle.CURRENT)
+        try {
+            context.stopServiceAsUser(Intent(context, DozeService::class.java), UserHandle.CURRENT)
+        } catch (e: Exception) {
+            Log.e(TAG, "Failed to stop DozeService", e)
+        }
     }
 
     fun checkDozeService(context: Context) {
-        if (isDozeEnabled(context) && !isAlwaysOnEnabled(context) && areGesturesEnabled(context)) {
-            startService(context)
-        } else {
-            stopService(context)
-        }
+        // Keep service running to allow ContentObservers to react to runtime setting toggles
+        startService(context)
     }
 
     fun isDozeEnabled(context: Context): Boolean {
@@ -84,20 +93,62 @@ object Utils {
     }
 
     fun isPickUpEnabled(context: Context): Boolean {
-        return PreferenceManager.getDefaultSharedPreferences(context)
-            .getString(GESTURE_PICK_UP_KEY, "0") != "0"
+        val aospValue = Settings.Secure.getInt(
+            context.contentResolver,
+            Settings.Secure.DOZE_PICK_UP_GESTURE,
+            -1
+        )
+        if (aospValue != -1) {
+            return aospValue != 0
+        }
+        val pref = PreferenceManager.getDefaultSharedPreferences(context)
+            .getString(GESTURE_PICK_UP_KEY, null)
+        if (pref != null) {
+            return pref != "0"
+        }
+        return try {
+            context.resources.getBoolean(
+                com.android.internal.R.bool.config_dozePickupGestureEnabled
+            )
+        } catch (e: Exception) {
+            false
+        }
     }
 
     fun isPickUpSetToWake(context: Context): Boolean {
+        val aospValue = Settings.Secure.getInt(
+            context.contentResolver,
+            Settings.Secure.DOZE_PICK_UP_GESTURE,
+            -1
+        )
+        if (aospValue != -1) {
+            // VoltageOS: 0 = wake screen, 1 = ambient pulse
+            val ambientOnly = Settings.Secure.getInt(
+                context.contentResolver,
+                DOZE_PICK_UP_GESTURE_AMBIENT,
+                0
+            ) != 0
+            return !ambientOnly
+        }
+
+        // Lineage fallback: "2" = wake screen, "1" = ambient pulse
         return PreferenceManager.getDefaultSharedPreferences(context)
             .getString(GESTURE_PICK_UP_KEY, "0") == "2"
     }
 
     fun isPocketEnabled(context: Context): Boolean {
+        val pocketVal = Settings.System.getInt(
+            context.contentResolver,
+            POCKET_JUDGE,
+            -1
+        )
+        if (pocketVal != -1) {
+            return pocketVal != 0
+        }
         return isGestureEnabled(context, GESTURE_POCKET_KEY)
     }
 
-    private fun areGesturesEnabled(context: Context): Boolean {
+    fun areGesturesEnabled(context: Context): Boolean {
         return isPickUpEnabled(context) || isPocketEnabled(context)
     }
 

@@ -12,8 +12,8 @@ import android.util.Log
 
 class BootCompletedReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
-        Log.d(TAG, "Starting")
-        Utils.checkDozeService(context)
+        Log.d(TAG, "Boot completed received, starting DozeService")
+        Utils.startService(context)
     }
 
     companion object {

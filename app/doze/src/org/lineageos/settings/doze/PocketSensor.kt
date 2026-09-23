@@ -12,7 +12,6 @@ import android.hardware.SensorEventListener
 import android.hardware.SensorManager
 import android.os.SystemClock
 import android.os.SystemProperties
-import android.util.Log
 
 import java.util.concurrent.Executors
 
@@ -25,9 +24,9 @@ class PocketSensor(
     private val executorService = Executors.newSingleThreadExecutor()
     private var entryTimestamp = 0L
     private var wasInPocket = false
+    private var isEnabled = false
 
     override fun onSensorChanged(event: SensorEvent) {
-        if (DEBUG) Log.d(TAG, "Got sensor event: ${event.values[0]}")
         val isNear = event.values[0] == sensorValue
         if (isNear) {
             wasInPocket = true
@@ -48,8 +47,8 @@ class PocketSensor(
     override fun onAccuracyChanged(sensor: Sensor, accuracy: Int) {}
 
     fun enable() {
-        if (sensor != null) {
-            Log.d(TAG, "Enabling")
+        if (sensor != null && !isEnabled) {
+            isEnabled = true
             executorService.submit {
                 entryTimestamp = SystemClock.elapsedRealtime()
                 sensorManager.registerListener(this, sensor, SensorManager.SENSOR_DELAY_NORMAL)
@@ -58,8 +57,8 @@ class PocketSensor(
     }
 
     fun disable() {
-        if (sensor != null) {
-            Log.d(TAG, "Disabling")
+        if (sensor != null && isEnabled) {
+            isEnabled = false
             executorService.submit {
                 sensorManager.unregisterListener(this, sensor)
                 wasInPocket = false
@@ -69,9 +68,6 @@ class PocketSensor(
     }
 
     companion object {
-        private const val TAG = "PocketSensor"
-        private const val DEBUG = false
-
         private const val MIN_PULSE_INTERVAL_MS = 2500L
     }
 }
