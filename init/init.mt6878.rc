@@ -231,6 +231,14 @@ on post-fs-data
     chmod 0666 /sys/class/leds/noth_leds/state
     chown system system /proc/touchpanel/palm_to_sleep_support
     chmod 0666 /proc/touchpanel/palm_to_sleep_support
+    chown system system /sys/devices/platform/soc/11c22000.i2c/i2c-2/2-0038/fts_gesture_fod_pressed
+    chmod 0666 /sys/devices/platform/soc/11c22000.i2c/i2c-2/2-0038/fts_gesture_fod_pressed
+    chown system system /sys/devices/platform/soc/11c22000.i2c/i2c-2/2-0038/fts_gesture_single_tap_pressed
+    chmod 0666 /sys/devices/platform/soc/11c22000.i2c/i2c-2/2-0038/fts_gesture_single_tap_pressed
+    chown system system /sys/bus/i2c/devices/2-0038/fts_gesture_fod_pressed
+    chmod 0666 /sys/bus/i2c/devices/2-0038/fts_gesture_fod_pressed
+    chown system system /sys/bus/i2c/devices/2-0038/fts_gesture_single_tap_pressed
+    chmod 0666 /sys/bus/i2c/devices/2-0038/fts_gesture_single_tap_pressed
 
 # -----------------------
 # Add by MTK
@@ -803,6 +811,15 @@ on boot
     chown system system /sys/class/leds/vibrator_nt/loop
     chmod 0666 /sys/class/leds/vibrator_nt/lk_f0
     chown system system /sys/class/leds/vibrator_nt/lk_f0
+
+    chown system system /sys/devices/platform/soc/11c22000.i2c/i2c-2/2-0038/fts_gesture_fod_pressed
+    chmod 0666 /sys/devices/platform/soc/11c22000.i2c/i2c-2/2-0038/fts_gesture_fod_pressed
+    chown system system /sys/devices/platform/soc/11c22000.i2c/i2c-2/2-0038/fts_gesture_single_tap_pressed
+    chmod 0666 /sys/devices/platform/soc/11c22000.i2c/i2c-2/2-0038/fts_gesture_single_tap_pressed
+    chown system system /sys/bus/i2c/devices/2-0038/fts_gesture_fod_pressed
+    chmod 0666 /sys/bus/i2c/devices/2-0038/fts_gesture_fod_pressed
+    chown system system /sys/bus/i2c/devices/2-0038/fts_gesture_single_tap_pressed
+    chmod 0666 /sys/bus/i2c/devices/2-0038/fts_gesture_single_tap_pressed
 
     # gauge symbolic
     symlink /sys/devices/platform/soc/11280000.i2c/i2c-5/5-0034/11280000.i2c:mt6375@34:mtk-gauge /dev/gauge

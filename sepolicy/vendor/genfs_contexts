@@ -14,6 +14,7 @@ genfscon proc /sys/vm/min_free_kbytes                                           
 
 # Touchpanel
 genfscon proc /touchpanel                                                         u:object_r:proc_touchpanel:s0
+genfscon sysfs /devices/platform/soc/11c22000.i2c/i2c-2/2-0038                    u:object_r:vendor_sysfs_touchpanel:s0
 
 # Wakeup
 genfscon sysfs /devices/platform/10001000.consys/wakeup                                                                          u:object_r:sysfs_wakeup:s0
