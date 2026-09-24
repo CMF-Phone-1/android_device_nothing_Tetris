@@ -227,6 +227,8 @@ ndk::ScopedAStatus Session::cancel() {
 ndk::ScopedAStatus Session::close() {
     ALOGI("close");
 
+    ::android::base::WriteStringToFile("0", "/sys/panel_feature/ui_status");
+
     mClosed = true;
     mCb->onSessionClosed();
     AIBinder_DeathRecipient_delete(mDeathRecipient);
@@ -348,6 +350,7 @@ void Session::lockoutTimerExpired() {
 void Session::notify(const fingerprint_msg_t* msg) {
     switch (msg->type) {
         case FINGERPRINT_ERROR: {
+            ::android::base::WriteStringToFile("0", "/sys/panel_feature/ui_status");
             int32_t vendorCode = 0;
             Error result = VendorErrorFilter(msg->data.error, &vendorCode);
             ALOGD("onError(%hhd, %d)", result, vendorCode);
@@ -363,6 +366,11 @@ void Session::notify(const fingerprint_msg_t* msg) {
             } else {
                 ALOGW("onAcquired(AcquiredInfo::VENDOR, %d)", vendorCode);
                 // Do not send onAcquired or illumination will be turned off prematurely
+                if (vendorCode == 2) {
+                    ::android::base::WriteStringToFile("1", "/sys/panel_feature/ui_status");
+                } else if (vendorCode == 3) {
+                    ::android::base::WriteStringToFile("0", "/sys/panel_feature/ui_status");
+                }
             }
         } break;
         case FINGERPRINT_TEMPLATE_ENROLLING: {
@@ -383,6 +391,7 @@ void Session::notify(const fingerprint_msg_t* msg) {
             mCb->onEnrollmentsRemoved(enrollments);
         } break;
         case FINGERPRINT_AUTHENTICATED: {
+            ::android::base::WriteStringToFile("0", "/sys/panel_feature/ui_status");
             ALOGD("onAuthenticated(fid=%d, gid=%d)", msg->data.authenticated.finger.fid,
                 msg->data.authenticated.finger.gid);
             if (msg->data.authenticated.finger.fid != 0) {
