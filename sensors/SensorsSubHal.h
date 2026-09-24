@@ -40,32 +40,32 @@ class SensorsSubHal : public ISensorsSubHal, public ISensorsEventCallback {
   public:
     SensorsSubHal();
 
-    Return<void> getSensorsList_2_1(ISensors::getSensorsList_2_1_cb _hidl_cb);
-    Return<Result> injectSensorData_2_1(const Event& event);
-    Return<Result> initialize(const sp<IHalProxyCallback>& halProxyCallback);
+    Return<void> getSensorsList_2_1(ISensors::getSensorsList_2_1_cb _hidl_cb) override;
+    Return<Result> injectSensorData_2_1(const Event& event) override;
+    Return<Result> initialize(const sp<IHalProxyCallback>& halProxyCallback) override;
 
-    virtual Return<Result> setOperationMode(OperationMode mode);
+    virtual Return<Result> setOperationMode(OperationMode mode) override;
 
     OperationMode getOperationMode() const { return mCurrentOperationMode; }
 
-    Return<Result> activate(int32_t sensorHandle, bool enabled);
+    Return<Result> activate(int32_t sensorHandle, bool enabled) override;
 
     Return<Result> batch(int32_t sensorHandle, int64_t samplingPeriodNs,
-                         int64_t maxReportLatencyNs);
+                         int64_t maxReportLatencyNs) override;
 
-    Return<Result> flush(int32_t sensorHandle);
+    Return<Result> flush(int32_t sensorHandle) override;
 
     Return<void> registerDirectChannel(const SharedMemInfo& mem,
-                                       ISensors::registerDirectChannel_cb _hidl_cb);
+                                       ISensors::registerDirectChannel_cb _hidl_cb) override;
 
-    Return<Result> unregisterDirectChannel(int32_t channelHandle);
+    Return<Result> unregisterDirectChannel(int32_t channelHandle) override;
 
     Return<void> configDirectReport(int32_t sensorHandle, int32_t channelHandle, RateLevel rate,
-                                    ISensors::configDirectReport_cb _hidl_cb);
+                                    ISensors::configDirectReport_cb _hidl_cb) override;
 
-    Return<void> debug(const hidl_handle& fd, const hidl_vec<hidl_string>& args);
+    Return<void> debug(const hidl_handle& fd, const hidl_vec<hidl_string>& args) override;
 
-    const std::string getName() { return "FakeSubHal"; }
+    const std::string getName() override { return "FakeSubHal"; }
 
     void postEvents(const std::vector<Event>& events, bool wakeup) override;
 

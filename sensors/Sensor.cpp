@@ -54,11 +54,12 @@ static bool readFpState(int fd, int& screenX, int& screenY) {
         return false;
     }
 
-    rc = read(fd, &buffer, sizeof(buffer));
+    rc = read(fd, buffer, sizeof(buffer) - 1);
     if (rc < 0) {
         ALOGE("failed to read state: %d", rc);
         return false;
     }
+    buffer[rc] = '\0';
 
     rc = sscanf(buffer, "%d,%d,%d", &screenX, &screenY, &state);
     if (rc < 0) {
@@ -67,6 +68,27 @@ static bool readFpState(int fd, int& screenX, int& screenY) {
     }
 
     return state > 0;
+}
+
+static const std::vector<const char*> kFodPaths = {
+    "/sys/devices/platform/soc/11c22000.i2c/i2c-2/2-0038/fts_gesture_fod_pressed",
+    "/sys/bus/i2c/devices/2-0038/fts_gesture_fod_pressed",
+};
+
+static const std::vector<const char*> kSingleTapPaths = {
+    "/sys/devices/platform/soc/11c22000.i2c/i2c-2/2-0038/fts_gesture_single_tap_pressed",
+    "/sys/bus/i2c/devices/2-0038/fts_gesture_single_tap_pressed",
+};
+
+static int openSysfsNode(const std::vector<const char*>& paths) {
+    for (const char* path : paths) {
+        int fd = open(path, O_RDONLY);
+        if (fd >= 0) {
+            ALOGI("Opened sysfs node %s (fd=%d)", path, fd);
+            return fd;
+        }
+    }
+    return -1;
 }
 
 }  // anonymous namespace
@@ -242,7 +264,7 @@ OneShotSensor::OneShotSensor(int32_t sensorHandle, ISensorsEventCallback* callba
 }
 
 UdfpsSensor::UdfpsSensor(int32_t sensorHandle, ISensorsEventCallback* callback)
-    : OneShotSensor(sensorHandle, callback) {
+    : OneShotSensor(sensorHandle, callback), mPollFd(-1), mScreenX(0), mScreenY(0) {
     mSensorInfo.name = "UDFPS Sensor";
     mSensorInfo.type =
             static_cast<SensorType>(static_cast<int32_t>(SensorType::DEVICE_PRIVATE_BASE) + 1);
@@ -252,23 +274,18 @@ UdfpsSensor::UdfpsSensor(int32_t sensorHandle, ISensorsEventCallback* callback)
     mSensorInfo.power = 0;
     mSensorInfo.flags |= SensorFlagBits::WAKE_UP;
 
-    int rc;
-
-    rc = pipe(mWaitPipeFd);
+    int rc = pipe(mWaitPipeFd);
     if (rc < 0) {
         mWaitPipeFd[0] = -1;
         mWaitPipeFd[1] = -1;
         ALOGE("failed to open wait pipe: %d", rc);
-    }
-
-    mPollFd = open("/sys/devices/platform/soc/11c22000.i2c/i2c-2/2-0038/fts_gesture_fod_pressed", O_RDONLY);
-    if (mPollFd < 0) {
-        ALOGE("failed to open poll fd: %d", mPollFd);
-    }
-
-    if (mWaitPipeFd[0] < 0 || mWaitPipeFd[1] < 0 || mPollFd < 0) {
         mStopThread = true;
         return;
+    }
+
+    mPollFd = openSysfsNode(kFodPaths);
+    if (mPollFd < 0) {
+        ALOGW("UdfpsSensor: poll fd not yet available at init, will retry when activated");
     }
 
     mPolls[0] = {
@@ -283,6 +300,10 @@ UdfpsSensor::UdfpsSensor(int32_t sensorHandle, ISensorsEventCallback* callback)
 }
 
 UdfpsSensor::~UdfpsSensor() {
+    {
+        std::lock_guard<std::mutex> lock(mRunMutex);
+        mStopThread = true;
+    }
     interruptPoll();
 }
 
@@ -291,6 +312,14 @@ void UdfpsSensor::activate(bool enable) {
 
     if (mIsEnabled != enable) {
         mIsEnabled = enable;
+
+        if (mIsEnabled && mPollFd < 0) {
+            mPollFd = openSysfsNode(kFodPaths);
+            if (mPollFd >= 0) {
+                mPolls[1].fd = mPollFd;
+                mPolls[1].events = POLLERR | POLLPRI;
+            }
+        }
 
         interruptPoll();
         mWaitCV.notify_all();
@@ -311,21 +340,38 @@ void UdfpsSensor::run() {
                 return ((mIsEnabled && mMode == OperationMode::NORMAL) || mStopThread);
             });
         } else {
+            if (mPollFd < 0) {
+                mPollFd = openSysfsNode(kFodPaths);
+                if (mPollFd >= 0) {
+                    mPolls[1].fd = mPollFd;
+                    mPolls[1].events = POLLERR | POLLPRI;
+                } else {
+                    ALOGE("UdfpsSensor: poll fd not available, waiting before retry...");
+                    mWaitCV.wait_for(runLock, std::chrono::milliseconds(500), [&] {
+                        return mStopThread || !mIsEnabled;
+                    });
+                    continue;
+                }
+            }
+
             // Cannot hold lock while polling.
             runLock.unlock();
             int rc = poll(mPolls, 2, -1);
             runLock.lock();
 
             if (rc < 0) {
-                ALOGE("failed to poll: %d", rc);
-                mStopThread = true;
+                if (errno == EINTR) {
+                    continue;
+                }
+                ALOGE("failed to poll: %d, errno: %d", rc, errno);
+                std::this_thread::sleep_for(std::chrono::milliseconds(100));
                 continue;
             }
 
-            if (mPolls[1].revents == mPolls[1].events && readFpState(mPollFd, mScreenX, mScreenY)) {
+            if ((mPolls[1].revents & (POLLERR | POLLPRI)) && readFpState(mPollFd, mScreenX, mScreenY)) {
                 mIsEnabled = false;
                 mCallback->postEvents(readEvents(), isWakeUpSensor());
-            } else if (mPolls[0].revents == mPolls[0].events) {
+            } else if (mPolls[0].revents & POLLIN) {
                 char buf;
                 read(mWaitPipeFd[0], &buf, sizeof(buf));
             }
@@ -353,7 +399,7 @@ void UdfpsSensor::interruptPoll() {
 }
 
 SingleTapSensor::SingleTapSensor(int32_t sensorHandle, ISensorsEventCallback* callback)
-    : OneShotSensor(sensorHandle, callback) {
+    : OneShotSensor(sensorHandle, callback), mPollFd(-1) {
     mSensorInfo.name = "Single Tap Sensor";
     mSensorInfo.type =
             static_cast<SensorType>(static_cast<int32_t>(SensorType::DEVICE_PRIVATE_BASE) + 2);
@@ -363,23 +409,18 @@ SingleTapSensor::SingleTapSensor(int32_t sensorHandle, ISensorsEventCallback* ca
     mSensorInfo.power = 0;
     mSensorInfo.flags |= SensorFlagBits::WAKE_UP;
 
-    int rc;
-
-    rc = pipe(mWaitPipeFd);
+    int rc = pipe(mWaitPipeFd);
     if (rc < 0) {
         mWaitPipeFd[0] = -1;
         mWaitPipeFd[1] = -1;
         ALOGE("failed to open wait pipe: %d", rc);
-    }
-
-    mPollFd = open("/sys/devices/platform/soc/11c22000.i2c/i2c-2/2-0038/fts_gesture_single_tap_pressed", O_RDONLY);
-    if (mPollFd < 0) {
-        ALOGE("failed to open poll fd: %d", mPollFd);
-    }
-
-    if (mWaitPipeFd[0] < 0 || mWaitPipeFd[1] < 0 || mPollFd < 0) {
         mStopThread = true;
         return;
+    }
+
+    mPollFd = openSysfsNode(kSingleTapPaths);
+    if (mPollFd < 0) {
+        ALOGW("SingleTapSensor: poll fd not yet available at init, will retry when activated");
     }
 
     mPolls[0] = {
@@ -394,6 +435,10 @@ SingleTapSensor::SingleTapSensor(int32_t sensorHandle, ISensorsEventCallback* ca
 }
 
 SingleTapSensor::~SingleTapSensor() {
+    {
+        std::lock_guard<std::mutex> lock(mRunMutex);
+        mStopThread = true;
+    }
     interruptPoll();
 }
 
@@ -402,6 +447,14 @@ void SingleTapSensor::activate(bool enable) {
 
     if (mIsEnabled != enable) {
         mIsEnabled = enable;
+
+        if (mIsEnabled && mPollFd < 0) {
+            mPollFd = openSysfsNode(kSingleTapPaths);
+            if (mPollFd >= 0) {
+                mPolls[1].fd = mPollFd;
+                mPolls[1].events = POLLERR | POLLPRI;
+            }
+        }
 
         interruptPoll();
         mWaitCV.notify_all();
@@ -422,21 +475,38 @@ void SingleTapSensor::run() {
                 return ((mIsEnabled && mMode == OperationMode::NORMAL) || mStopThread);
             });
         } else {
+            if (mPollFd < 0) {
+                mPollFd = openSysfsNode(kSingleTapPaths);
+                if (mPollFd >= 0) {
+                    mPolls[1].fd = mPollFd;
+                    mPolls[1].events = POLLERR | POLLPRI;
+                } else {
+                    ALOGE("SingleTapSensor: poll fd not available, waiting before retry...");
+                    mWaitCV.wait_for(runLock, std::chrono::milliseconds(500), [&] {
+                        return mStopThread || !mIsEnabled;
+                    });
+                    continue;
+                }
+            }
+
             // Cannot hold lock while polling.
             runLock.unlock();
             int rc = poll(mPolls, 2, -1);
             runLock.lock();
 
             if (rc < 0) {
-                ALOGE("failed to poll: %d", rc);
-                mStopThread = true;
+                if (errno == EINTR) {
+                    continue;
+                }
+                ALOGE("failed to poll: %d, errno: %d", rc, errno);
+                std::this_thread::sleep_for(std::chrono::milliseconds(100));
                 continue;
             }
 
-            if (mPolls[1].revents == mPolls[1].events && readBool(mPollFd)) {
+            if ((mPolls[1].revents & (POLLERR | POLLPRI)) && readBool(mPollFd)) {
                 mIsEnabled = false;
                 mCallback->postEvents(readEvents(), isWakeUpSensor());
-            } else if (mPolls[0].revents == mPolls[0].events) {
+            } else if (mPolls[0].revents & POLLIN) {
                 char buf;
                 read(mWaitPipeFd[0], &buf, sizeof(buf));
             }
