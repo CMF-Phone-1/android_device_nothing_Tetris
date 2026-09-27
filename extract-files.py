@@ -112,6 +112,8 @@ blob_fixups: blob_fixups_user_type = {
         'vendor/lib64/libmtkcam_cputrack.so',
     ): blob_fixup()
         .add_needed('libprocessgroup_shim.so'),
+    'vendor/lib64/libcamera2ndk_vendor-v33.so': blob_fixup()
+        .replace_needed('libstagefright_foundation.so', 'libstagefright_foundation-v33.so'),
     'vendor/lib64/libntcamcore.so': blob_fixup()
         .remove_needed('libntcamextened.so'),
     (
