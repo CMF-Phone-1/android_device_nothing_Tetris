@@ -4,5 +4,8 @@ vendor_restricted_prop(vendor_audio_prop)
 # Camera
 vendor_internal_prop(vendor_persist_camera_prop)
 
+# Face unlock
+vendor_internal_prop(vendor_face_prop)
+
 # Fingerprint
 vendor_internal_prop(vendor_fingerprint_prop)
