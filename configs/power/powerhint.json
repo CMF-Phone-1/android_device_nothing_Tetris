@@ -508,19 +508,19 @@
       "PowerHint": "EXPENSIVE_RENDERING",
       "Node": "GpuPwrLevel",
       "Duration": 0,
-      "Value": "22"
+      "Value": "0"
     },
     {
       "PowerHint": "EXPENSIVE_RENDERING",
       "Node": "CPUSuperClusterMinFreq",
       "Duration": 0,
-      "Value": "2200000"
+      "Value": "2400000"
     },
     {
       "PowerHint": "EXPENSIVE_RENDERING",
       "Node": "CPUEfficiencyClusterMinFreq",
       "Duration": 0,
-      "Value": "1050000"
+      "Value": "1400000"
     },
     {
       "PowerHint": "EXPENSIVE_RENDERING",
@@ -533,6 +533,18 @@
       "Node": "GpuBaseDvfsStep",
       "Duration": 0,
       "Value": "16"
+    },
+    {
+      "PowerHint": "EXPENSIVE_RENDERING",
+      "Node": "UclampFGMin",
+      "Duration": 0,
+      "Value": "30"
+    },
+    {
+      "PowerHint": "EXPENSIVE_RENDERING",
+      "Node": "UclampTALatency",
+      "Duration": 0,
+      "Value": "1"
     },
     {
       "PowerHint": "EXPENSIVE_RENDERING",
