@@ -11,8 +11,8 @@
     <string name="config_udfpsHbmDimLayer" translatable="false">NTFingerprintDimLayer</string>
 
     <!-- Doze: does the single tap sensor need a proximity check? -->
-    <bool name="doze_single_tap_proximity_check">true</bool>
+    <bool name="doze_single_tap_uses_prox">true</bool>
 
     <!-- Doze: does the long press sensor need a proximity check? -->
-    <bool name="doze_long_press_proximity_check">true</bool>
+    <bool name="doze_long_press_uses_prox">true</bool>
 </resources>
