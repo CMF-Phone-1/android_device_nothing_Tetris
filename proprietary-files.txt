@@ -1,5 +1,5 @@
 # All proprietary files from this list, unless pinned and noted otherwise,
-# are from Nothing CMF Phone (1) (Tetris_B4.1-260615-1652).
+# are from Nothing CMF Phone (1) (Tetris_B4.1-260812-1726).
 
 # Audio
 vendor/etc/aurisys_config.xml
