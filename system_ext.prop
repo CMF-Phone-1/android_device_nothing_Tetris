@@ -11,7 +11,7 @@ ro.camera.notify_nfc=1
 sys.brightness.disable_gamma_conversion=true
 
 # Radio
-persist.radio.nt.modem.svn=24
+persist.radio.nt.modem.svn=25
 ro.vendor.mtk_gwsd_support=1
 ro.vendor.vodata_support=1
 
