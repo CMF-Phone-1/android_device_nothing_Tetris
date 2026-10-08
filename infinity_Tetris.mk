@@ -3,34 +3,21 @@
 # SPDX-License-Identifier: Apache-2.0
 #
 
-# Inherit from those products. Most specific first.
 $(call inherit-product, $(SRC_TARGET_DIR)/product/core_64_bit_only.mk)
 $(call inherit-product, $(SRC_TARGET_DIR)/product/full_base_telephony.mk)
-
-# Inherit from Tetris device
 $(call inherit-product, device/nothing/Tetris/device.mk)
-
-# Inherit some common BlissRoms stuff.
-$(call inherit-product, vendor/bliss/config/common_full_phone.mk)
-
-# Bootanimation
+$(call inherit-product, vendor/infinity/config/common_full_phone.mk)
 TARGET_BOOT_ANIMATION_RES := 1080
-
-BLISS_BUILDTYPE := OFFICIAL
-EXTRA_UDFPS_ANIMATIONS := true
+INFINITY_MAINTAINER := "Baris"
 TARGET_HAS_UDFPS := true
-GAPPS_ARCH := arm64
-
-PRODUCT_NAME := bliss_Tetris
+WITH_GAPPS := false
+PRODUCT_NAME := infinity_Tetris
 PRODUCT_DEVICE := Tetris
 PRODUCT_BRAND := Nothing
 PRODUCT_MANUFACTURER := Nothing
 PRODUCT_MODEL := A015
-
 PRODUCT_GMS_CLIENTID_BASE := android-nothing
-
 DEVICE_CODENAME := Tetris
-
 PRODUCT_BUILD_PROP_OVERRIDES += \
     BuildDesc="sys_mssi_64_64only_ww_armv82-user 16 BP2A.250605.031.A3 2606151652 release-keys" \
     BuildFingerprint=Nothing/Tetris/Tetris:16/BP2A.250605.031.A3/2606151652:user/release-keys \
