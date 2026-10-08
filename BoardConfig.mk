@@ -94,7 +94,7 @@ BOARD_FLASH_BLOCK_SIZE := $(BOARD_KERNEL_PAGESIZE)
 BOARD_INIT_BOOT_IMAGE_PARTITION_SIZE := $(BOARD_DTBOIMG_PARTITION_SIZE)
 BOARD_VENDOR_BOOTIMAGE_PARTITION_SIZE := $(BOARD_BOOTIMAGE_PARTITION_SIZE)
 
--include vendor/bliss/config/BoardConfigReservedSize.mk
+-include vendor/infinity/config/BoardConfigReservedSize.mk
 
 BOARD_SUPER_PARTITION_SIZE := 9663676416
 BOARD_SUPER_PARTITION_GROUPS := nothing_dynamic_partitions
@@ -138,7 +138,8 @@ TARGET_USERIMAGES_USE_F2FS := true
 
 # SEPolicy
 include device/mediatek/sepolicy_vndr/SEPolicy.mk
-include device/bliss/sepolicy/libion/sepolicy.mk
+# Bliss-only, not available in InfinityX; re-check if SELinux denials appear for libion
+# include device/bliss/sepolicy/libion/sepolicy.mk
 
 BOARD_VENDOR_SEPOLICY_DIRS += $(DEVICE_PATH)/sepolicy/vendor
 
