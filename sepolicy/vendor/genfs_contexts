@@ -59,3 +59,5 @@ genfscon sysfs /devices/platform/soc/1c804000.spmi/spmi-0/0-09/mt6685-rtc/rtc/rt
 genfscon sysfs /devices/platform/soc/1e000000.adspsys/wakeup                                                                     u:object_r:sysfs_wakeup:s0
 genfscon sysfs /devices/platform/soc/1f000000.mmlsys-config/wakeup                                                               u:object_r:sysfs_wakeup:s0
 genfscon sysfs /devices/virtual/power_supply/mtk-gauge/wakeup39                                                                  u:object_r:sysfs_wakeup:s0
+genfscon sysfs /devices/platform/mdp/wakeup                                                                                      u:object_r:sysfs_wakeup:s0
+genfscon sysfs /devices/platform/soc/11e03000.i2c/i2c-8/8-001a/wakeup                                                          u:object_r:sysfs_wakeup:s0
