@@ -194,9 +194,6 @@ vendor/lib64/libbluetooth_mtk_pure.so
 vendor/lib64/libbt-vendor.so
 
 # Bluetooth (A2DP)
-vendor/lib64/vendor.mediatek.hardware.bluetooth.audio-V1-ndk.so
-vendor/lib64/vendor.mediatek.hardware.bluetooth.audio@2.1.so
-vendor/lib64/vendor.mediatek.hardware.bluetooth.audio@2.2.so
 
 # Camera
 vendor/bin/hw/mt6878/camerahalserver;SYMLINK=vendor/bin/hw/camerahalserver
@@ -942,7 +939,6 @@ vendor/etc/init/mtk_lbs_service.rc
 vendor/etc/vintf/manifest/mtk_lbs_service.xml
 vendor/lib64/mtk_lbs_service-impl.so
 vendor/lib64/vendor.mediatek.hardware.lbs-V1-ndk.so
-vendor/lib64/vendor.mediatek.hardware.lbs@1.0.so
 
 # Lights
 vendor/bin/hw/android.hardware.lights-service.mediatek
@@ -1224,7 +1220,6 @@ vendor/etc/init/netdagent.rc
 vendor/lib64/libforkexecwrap.so
 vendor/lib64/libifcutils_mtk.so
 vendor/lib64/vendor.mediatek.hardware.netdagent-V1-ndk.so
-vendor/lib64/vendor.mediatek.hardware.netdagent@1.0.so
 
 # Thermal
 vendor/bin/thermal_core

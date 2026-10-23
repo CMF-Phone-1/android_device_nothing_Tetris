@@ -42,6 +42,9 @@ PRODUCT_PACKAGES += \
     android.hardware.audio.service \
     android.hardware.bluetooth.audio-impl \
     android.hardware.bluetooth.audio-V3-ndk.vendor \
+    vendor.mediatek.hardware.bluetooth.audio-V1-ndk.vendor \
+    vendor.mediatek.hardware.bluetooth.audio@2.1.vendor \
+    vendor.mediatek.hardware.bluetooth.audio@2.2.vendor \
     android.hardware.soundtrigger@2.3-impl
 
 PRODUCT_PACKAGES += \
@@ -89,7 +92,8 @@ TARGET_SCREEN_HEIGHT := 2400
 PRODUCT_PACKAGES += \
     libcamera_metadata_shim \
     libmtk_cam_shim_Tetris \
-    libprocessgroup_shim
+    libprocessgroup_shim \
+    vendor.mediatek.hardware.lbs@1.0.vendor
 
 PRODUCT_COPY_FILES += \
     frameworks/native/data/etc/android.hardware.camera.concurrent.xml:$(TARGET_COPY_OUT_VENDOR)/etc/permissions/android.hardware.camera.concurrent.xml \
@@ -195,6 +199,10 @@ PRODUCT_PACKAGES += \
 PRODUCT_COPY_FILES += \
     frameworks/native/data/etc/android.hardware.keystore.app_attest_key.xml:$(TARGET_COPY_OUT_VENDOR)/etc/permissions/android.hardware.keystore.app_attest_key.xml \
     frameworks/native/data/etc/android.software.device_id_attestation.xml:$(TARGET_COPY_OUT_VENDOR)/etc/permissions/android.software.device_id_attestation.xml
+
+# Lights
+PRODUCT_PACKAGES += \
+    vendor.mediatek.hardware.lbs@1.0.vendor
 
 # LiveDisplay
 PRODUCT_PACKAGES += \
