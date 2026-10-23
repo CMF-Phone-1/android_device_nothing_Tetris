@@ -96,8 +96,8 @@
          when adapting to brighter or darker environments.  This parameter controls how quickly
          brightness changes occur in response to an observed change in light level that exceeds the
          hysteresis threshold. -->
-    <integer name="config_autoBrightnessBrighteningLightDebounce">500</integer>
-    <integer name="config_autoBrightnessDarkeningLightDebounce">500</integer>
+    <integer name="config_autoBrightnessBrighteningLightDebounce">1000</integer>
+    <integer name="config_autoBrightnessDarkeningLightDebounce">4000</integer>
 
     <!-- Array of light sensor lux values to define our levels for auto backlight brightness support.
          The N entries of this array define N + 1 control points as follows:
@@ -175,6 +175,41 @@
         <item>250</item>
         <item>255</item>
     </integer-array>
+
+     <!-- Array of desired screen brightness in nits corresponding to the lux values
+         in the config_autoBrightnessLevels array. The display brightness is defined as the measured
+         brightness of an all-white image.
+
+         If this is defined then:
+            - config_autoBrightnessLcdBacklightValues should not be defined
+            - config_screenBrightnessNits must be defined
+            - config_screenBrightnessBacklight must be defined
+
+         This array should have size one greater than the size of the config_autoBrightnessLevels
+         array. The brightness values must be non-negative and non-decreasing. This must be
+         overridden in platform specific overlays -->
+    <array name="config_autoBrightnessDisplayValuesNits">
+        <item>2.0</item>
+        <item>5.0</item>
+        <item>11.0</item>
+        <item>19.0</item>
+        <item>32.0</item>
+        <item>52.0</item>
+        <item>85.0</item>
+        <item>140.0</item>
+        <item>180.0</item>
+        <item>200.0</item>
+        <item>235.0</item>
+        <item>270.0</item>
+        <item>315.0</item>
+        <item>400.0</item>
+        <item>450.0</item>
+        <item>500.0</item>
+        <item>600.0</item>
+        <item>700.0</item>
+        <item>950.0</item>
+        <item>1200.0</item>
+    </array>
 
     <!-- Array of ambient lux threshold values. This is used for determining hysteresis constraint
          values by calculating the index to use for lookup and then setting the constraint value
