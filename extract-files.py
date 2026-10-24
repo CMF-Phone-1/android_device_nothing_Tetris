@@ -101,9 +101,8 @@ blob_fixups: blob_fixups_user_type = {
         .remove_needed('libarcsoft_dualcam_refocus_image.so')
         .remove_needed('libarcsoft_beautyshot.so')
         .remove_needed('libarcsoft_aiscenedetection.so')
-        .remove_needed('libarcsoft_high_dynamic_range_v5.so'),
-    'vendor/bin/hw/mt6878/camerahalserver': blob_fixup()
-        .add_needed('libcamera_metadata_shim.so'),
+        .remove_needed('libarcsoft_high_dynamic_range_v5.so')
+        .sig_replace('c8 00 9e 12 a8 02 08 0b 1f 05 00 71 c8 00 00 54', 'c8 00 9e 12 a8 02 08 0b 1f 05 00 71 1f 20 03 d5'),
     (
         'vendor/lib64/mt6878/libcam.hal3a.so',
         'vendor/lib64/mt6878/libcam.hal3a.ctrl.so',
@@ -150,6 +149,14 @@ blob_fixups: blob_fixups_user_type = {
         .replace_needed('android.hardware.sensors-V2-ndk.so', 'android.hardware.sensors-V3-ndk.so'),
     'vendor/lib64/mt6878/libmtkcam_hal_aidl_common.so': blob_fixup()
         .replace_needed('android.hardware.camera.common-V2-ndk.so', 'android.hardware.camera.common-V1-ndk.so'),
+    'vendor/lib64/mt6878/libmtkcam_metastore.so': blob_fixup()
+        .sig_replace('00 e4 00 6f 41 03 80 52 e0 83 00 91 21 00 a0 72 e0 03 01 ad e0 03 02 ad 55 94 01 94', 'f2 ff ff 17')
+        .sig_replace('00 e4 00 6f 41 03 80 52 e0 83 00 91 21 00 a0 72 e0 03 01 ad e0 03 02 ad 25 82 01 94', 'f2 ff ff 17')
+        .sig_replace('00 e4 00 6f 41 03 80 52 e0 83 00 91 21 00 a0 72 e0 03 01 ad e0 03 02 ad 32 1a 02 94', 'f4 ff ff 17')
+        .sig_replace('00 e4 00 6f 41 03 80 52 e0 83 00 91 21 00 a0 72 e0 03 01 ad e0 03 02 ad e6 22 02 94', 'f4 ff ff 17')
+        .sig_replace('00 e4 00 6f 41 03 80 52 e0 83 00 91 21 00 a0 72 e0 03 01 ad e0 03 02 ad 7e 11 02 94', 'f4 ff ff 17')
+        .sig_replace('00 e4 00 6f 41 03 80 52 e0 83 00 91 21 00 a0 72 e0 03 01 ad e0 03 02 ad 5e 08 02 94', 'f4 ff ff 17')
+        .sig_replace('00 e4 00 6f 41 03 80 52 e0 83 00 91 21 00 a0 72 e0 03 01 ad e0 03 02 ad aa ff 01 94', 'f4 ff ff 17'),
     'vendor/lib64/mt6878/libmorpho_video_stabilizer.so': blob_fixup()
         .add_needed('libutils.so'),
     'vendor/lib64/mt6878/libneuralnetworks_sl_driver_mtk_prebuilt.so': blob_fixup()
