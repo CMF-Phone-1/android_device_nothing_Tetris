@@ -7,6 +7,9 @@
     <!-- Whether to enable framework dimming for UDFPS -->
     <bool name="config_udfpsFrameworkDimming">true</bool>
 
+    <!-- Whether to only show the UDFPS framework dim layer while a finger is on the sensor -->
+    <bool name="config_udfpsFrameworkDimmingOnPress">true</bool>
+
     <!-- Brightness-to-alpha lookup table (LUT) for UDFPS framework dimming.
          Each entry is in the format <brightness>,<alpha> where:
            - brightness = panel backlight level

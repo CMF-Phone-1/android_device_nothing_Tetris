@@ -9,6 +9,7 @@
 #include <aidl/android/hardware/biometrics/fingerprint/BnSession.h>
 #include <aidl/android/hardware/biometrics/fingerprint/ISessionCallback.h>
 #include <android/log.h>
+#include <mutex>
 #include "fingerprint-nothing.h"
 #include <hardware/hardware.h>
 #include <log/log.h>
@@ -78,6 +79,13 @@ private:
     //static ndk::ScopedAStatus ErrorFilter(int32_t error);
     static Error VendorErrorFilter(int32_t error, int32_t* vendorCode);
     static AcquiredInfo VendorAcquiredFilter(int32_t info, int32_t* vendorCode);
+
+    enum class UiStatus { OFF, IF_READY };
+    void setUiStatus(UiStatus status);
+    void setUiStatusLocked(bool enabled);
+    std::mutex mUiStatusMutex;
+    bool mIsPointerDown = false;
+    bool mIsUiReady = false;
 
     bool checkSensorLockout();
     void clearLockout(bool clearAttemptCounter);

@@ -20,6 +20,8 @@ namespace hardware {
 namespace biometrics {
 namespace fingerprint {
 
+constexpr char kUiStatusPath[] = "/sys/panel_feature/ui_status";
+
 void onClientDeath(void* cookie) {
     ALOGI("FingerprintService has died");
     Session* session = static_cast<Session*>(cookie);
@@ -149,7 +151,8 @@ ndk::ScopedAStatus Session::onPointerDown(int32_t /*pointerId*/, int32_t x, int3
                                           float major) {
     ALOGI("onPointerDown: x=%d, y=%d, minor=%f, major=%f", x, y, minor, major);
 
-    ::android::base::WriteStringToFile("1", "/sys/panel_feature/ui_status");
+    std::lock_guard<std::mutex> lock(mUiStatusMutex);
+    mIsPointerDown = true;
 
     return ndk::ScopedAStatus::ok();
 }
@@ -157,7 +160,10 @@ ndk::ScopedAStatus Session::onPointerDown(int32_t /*pointerId*/, int32_t x, int3
 ndk::ScopedAStatus Session::onPointerUp(int32_t /*pointerId*/) {
     ALOGI("onPointerUp");
 
-    ::android::base::WriteStringToFile("0", "/sys/panel_feature/ui_status");
+    std::lock_guard<std::mutex> lock(mUiStatusMutex);
+    mIsPointerDown = false;
+    mIsUiReady = false;
+    setUiStatusLocked(false);
 
     return ndk::ScopedAStatus::ok();
 }
@@ -165,7 +171,9 @@ ndk::ScopedAStatus Session::onPointerUp(int32_t /*pointerId*/) {
 ndk::ScopedAStatus Session::onUiReady() {
     ALOGI("onUiReady");
 
-    ::android::base::WriteStringToFile("1", "/sys/panel_feature/ui_status");
+    std::lock_guard<std::mutex> lock(mUiStatusMutex);
+    mIsUiReady = mIsPointerDown;
+    setUiStatusLocked(mIsUiReady);
 
     return ndk::ScopedAStatus::ok();
 }
@@ -211,7 +219,11 @@ ndk::ScopedAStatus Session::setIgnoreDisplayTouches(bool /*shouldIgnore*/) {
 ndk::ScopedAStatus Session::cancel() {
     ALOGI("cancel");
 
-    ::android::base::WriteStringToFile("0", "/sys/panel_feature/ui_status");
+    {
+        std::lock_guard<std::mutex> lock(mUiStatusMutex);
+        mIsUiReady = false;
+        setUiStatusLocked(false);
+    }
 
     int ret = mDevice->cancel(mDevice);
 
@@ -227,7 +239,12 @@ ndk::ScopedAStatus Session::cancel() {
 ndk::ScopedAStatus Session::close() {
     ALOGI("close");
 
-    ::android::base::WriteStringToFile("0", "/sys/panel_feature/ui_status");
+    {
+        std::lock_guard<std::mutex> lock(mUiStatusMutex);
+        mIsPointerDown = false;
+        mIsUiReady = false;
+        setUiStatusLocked(false);
+    }
 
     mClosed = true;
     mCb->onSessionClosed();
@@ -339,6 +356,17 @@ void Session::startLockoutTimer(int64_t timeout) {
     mIsLockoutTimerStarted = true;
 }
 
+void Session::setUiStatus(UiStatus status) {
+    std::lock_guard<std::mutex> lock(mUiStatusMutex);
+    setUiStatusLocked(status == UiStatus::IF_READY && mIsUiReady);
+}
+
+void Session::setUiStatusLocked(bool enabled) {
+    if (!::android::base::WriteStringToFile(enabled ? "1" : "0", kUiStatusPath)) {
+        ALOGE("Failed to write %d to %s", enabled, kUiStatusPath);
+    }
+}
+
 void Session::lockoutTimerExpired() {
     if (!mIsLockoutTimerAborted)
         clearLockout(false);
@@ -350,7 +378,7 @@ void Session::lockoutTimerExpired() {
 void Session::notify(const fingerprint_msg_t* msg) {
     switch (msg->type) {
         case FINGERPRINT_ERROR: {
-            ::android::base::WriteStringToFile("0", "/sys/panel_feature/ui_status");
+            setUiStatus(UiStatus::OFF);
             int32_t vendorCode = 0;
             Error result = VendorErrorFilter(msg->data.error, &vendorCode);
             ALOGD("onError(%hhd, %d)", result, vendorCode);
@@ -367,9 +395,9 @@ void Session::notify(const fingerprint_msg_t* msg) {
                 ALOGW("onAcquired(AcquiredInfo::VENDOR, %d)", vendorCode);
                 // Do not send onAcquired or illumination will be turned off prematurely
                 if (vendorCode == 2) {
-                    ::android::base::WriteStringToFile("1", "/sys/panel_feature/ui_status");
+                    setUiStatus(UiStatus::IF_READY);
                 } else if (vendorCode == 3) {
-                    ::android::base::WriteStringToFile("0", "/sys/panel_feature/ui_status");
+                    setUiStatus(UiStatus::OFF);
                 }
             }
         } break;
@@ -391,7 +419,7 @@ void Session::notify(const fingerprint_msg_t* msg) {
             mCb->onEnrollmentsRemoved(enrollments);
         } break;
         case FINGERPRINT_AUTHENTICATED: {
-            ::android::base::WriteStringToFile("0", "/sys/panel_feature/ui_status");
+            setUiStatus(UiStatus::OFF);
             ALOGD("onAuthenticated(fid=%d, gid=%d)", msg->data.authenticated.finger.fid,
                 msg->data.authenticated.finger.gid);
             if (msg->data.authenticated.finger.fid != 0) {
