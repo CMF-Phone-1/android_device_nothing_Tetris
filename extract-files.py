@@ -68,7 +68,8 @@ blob_fixups: blob_fixups_user_type = {
         .binary_regex_replace(b'BTAudiosuspend', b'A2dpSuspended\x00'),
     'vendor/lib64/hw/hwcomposer.mtk_common.so': blob_fixup()
         .add_needed('libprocessgroup_shim.so')
-        .binary_regex_replace(b'NTFingerprintDimLayer', b'SurfaceView[UdfpsCont'),
+        .binary_regex_replace(b'NTFingerprintDimLayer', b'SurfaceView[UdfpsCont')
+        .replace_needed('vendor.mediatek.hardware.pq_aidl-V4-ndk.so', 'vendor.mediatek.hardware.pq_aidl-V7-ndk.so'),
     'vendor/bin/mnld': blob_fixup()
         .replace_needed('libmnl.so', 'libmnl_mtk.so'),
     'vendor/lib64/hw/sensors.mediatek.V2.0.so': blob_fixup()
@@ -144,8 +145,6 @@ blob_fixups: blob_fixups_user_type = {
         'vendor/lib64/libpqsharememory.so',
     ): blob_fixup()
         .replace_needed('vendor.mediatek.hardware.pq_aidl-V2-ndk.so', 'vendor.mediatek.hardware.pq_aidl-V7-ndk.so'),
-    'vendor/lib64/hw/hwcomposer.mtk_common.so': blob_fixup()
-        .replace_needed('vendor.mediatek.hardware.pq_aidl-V4-ndk.so', 'vendor.mediatek.hardware.pq_aidl-V7-ndk.so'),
     'vendor/lib64/mt6878/libpqconfig.so': blob_fixup()
         .replace_needed('android.hardware.sensors-V2-ndk.so', 'android.hardware.sensors-V3-ndk.so'),
     'vendor/lib64/mt6878/libmtkcam_hal_aidl_common.so': blob_fixup()
