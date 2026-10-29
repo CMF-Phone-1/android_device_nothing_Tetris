@@ -4,11 +4,72 @@
      SPDX-License-Identifier: Apache-2.0
 -->
 <resources>
-    <!-- Whether to enable MediaTek-specific optical dimming for UDFPS -->
-    <bool name="config_udfpsMtkGhbmDimming">true</bool>
+    <!-- Whether to enable framework dimming for UDFPS -->
+    <bool name="config_udfpsFrameworkDimming">true</bool>
 
-    <!-- Name of the UDFPS HBM DimLayer for the HWComposer -->
-    <string name="config_udfpsHbmDimLayer" translatable="false">NTFingerprintDimLayer</string>
+    <!-- Brightness-to-alpha lookup table (LUT) for UDFPS framework dimming.
+         Each entry is in the format <brightness>,<alpha> where:
+           - brightness = panel backlight level
+           - alpha = dim layer transparency applied at that brightness
+         Rules:
+           • The entries should be strictly ascending by brightness.
+           • First entry = <minBrightness,maxAlpha>.
+           • Last entry  = <maxBrightness,minAlpha>.
+    -->
+    <string-array name="config_udfpsDimmingBrightnessAlphaArray" translatable="false">
+        <item>0,250</item>       <!-- 0 (Alpha: 250) -->
+        <item>10,249</item>       <!-- 10 (Alpha: 249) -->
+        <item>20,248</item>       <!-- 20 (Alpha: 248) -->
+        <item>29,247</item>       <!-- 29 (Alpha: 247) -->
+        <item>38,246</item>       <!-- 38 (Alpha: 246) -->
+        <item>58,244</item>       <!-- 58 (Alpha: 244) -->
+        <item>77,242</item>       <!-- 77 (Alpha: 242) -->
+        <item>96,240</item>       <!-- 96 (Alpha: 240) -->
+        <item>115,238</item>       <!-- 115 (Alpha: 238) -->
+        <item>145,235</item>       <!-- 145 (Alpha: 235) -->
+        <item>173,232</item>       <!-- 173 (Alpha: 232) -->
+        <item>193,230</item>       <!-- 193 (Alpha: 230) -->
+        <item>212,228</item>       <!-- 212 (Alpha: 228) -->
+        <item>241,225</item>       <!-- 241 (Alpha: 225) -->
+        <item>270,223</item>       <!-- 270 (Alpha: 223) -->
+        <item>308,219</item>       <!-- 308 (Alpha: 219) -->
+        <item>338,216</item>       <!-- 338 (Alpha: 216) -->
+        <item>366,213</item>       <!-- 366 (Alpha: 213) -->
+        <item>405,209</item>       <!-- 405 (Alpha: 209) -->
+        <item>443,205</item>       <!-- 443 (Alpha: 205) -->
+        <item>482,201</item>       <!-- 482 (Alpha: 201) -->
+        <item>521,197</item>       <!-- 521 (Alpha: 197) -->
+        <item>559,193</item>       <!-- 559 (Alpha: 193) -->
+        <item>607,188</item>       <!-- 607 (Alpha: 188) -->
+        <item>656,183</item>       <!-- 656 (Alpha: 183) -->
+        <item>704,178</item>       <!-- 704 (Alpha: 178) -->
+        <item>752,173</item>       <!-- 752 (Alpha: 173) -->
+        <item>800,169</item>       <!-- 800 (Alpha: 169) -->
+        <item>849,164</item>       <!-- 849 (Alpha: 164) -->
+        <item>907,158</item>       <!-- 907 (Alpha: 158) -->
+        <item>964,152</item>       <!-- 964 (Alpha: 152) -->
+        <item>1022,146</item>       <!-- 1022 (Alpha: 146) -->
+        <item>1080,140</item>       <!-- 1080 (Alpha: 140) -->
+        <item>1138,134</item>       <!-- 1138 (Alpha: 134) -->
+        <item>1196,128</item>       <!-- 1196 (Alpha: 128) -->
+        <item>1263,121</item>       <!-- 1263 (Alpha: 121) -->
+        <item>1331,115</item>       <!-- 1331 (Alpha: 115) -->
+        <item>1398,108</item>       <!-- 1398 (Alpha: 108) -->
+        <item>1466,101</item>       <!-- 1466 (Alpha: 101) -->
+        <item>1533,94</item>       <!-- 1533 (Alpha: 94) -->
+        <item>1601,87</item>       <!-- 1601 (Alpha: 87) -->
+        <item>1668,80</item>       <!-- 1668 (Alpha: 80) -->
+        <item>1736,73</item>       <!-- 1736 (Alpha: 73) -->
+        <item>1803,67</item>       <!-- 1803 (Alpha: 67) -->
+        <item>1871,60</item>       <!-- 1871 (Alpha: 60) -->
+        <item>1938,53</item>       <!-- 1938 (Alpha: 53) -->
+        <item>2005,46</item>       <!-- 2005 (Alpha: 46) -->
+        <item>2073,39</item>       <!-- 2073 (Alpha: 39) -->
+        <item>2169,29</item>       <!-- 2169 (Alpha: 29) -->
+        <item>2265,20</item>       <!-- 2265 (Alpha: 20) -->
+        <item>2362,10</item>       <!-- 2362 (Alpha: 10) -->
+        <item>2457,0</item>       <!-- 2457 (Alpha: 0) -->
+    </string-array>
 
     <!-- Doze: does the single tap sensor need a proximity check? -->
     <bool name="doze_single_tap_uses_prox">true</bool>
