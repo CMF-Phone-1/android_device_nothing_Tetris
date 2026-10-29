@@ -142,9 +142,6 @@ $(call inherit-product, $(SRC_TARGET_DIR)/product/generic_ramdisk.mk)
 $(call inherit-product, $(SRC_TARGET_DIR)/product/emulated_storage.mk)
 
 # Fingerprint
-$(call soong_config_set_bool,surfaceflinger,has_mtk_udfps,true)
-$(call soong_config_set,surfaceflinger,mtk_dim_layer,NTFingerprintDimLayer)
-
 PRODUCT_PACKAGES += \
     android.hardware.biometrics.fingerprint-service.nothing
 
