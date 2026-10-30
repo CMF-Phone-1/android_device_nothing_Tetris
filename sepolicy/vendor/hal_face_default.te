@@ -4,6 +4,7 @@ binder_call(hal_face_default, hal_graphics_allocator_default)
 binder_call(hal_face_default, cameraserver)
 
 allow hal_face_default fwk_camera_hwservice:hwservice_manager find;
+allow hal_face_default fwk_camera_service:service_manager find;
 allow hal_face_default hal_graphics_mapper_hwservice:hwservice_manager find;
 allow hal_face_default hidl_token_hwservice:hwservice_manager find;
 
