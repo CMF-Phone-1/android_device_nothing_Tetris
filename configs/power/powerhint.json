@@ -4,12 +4,10 @@
       "Name": "MemFreq",
       "Path": "/sys/devices/platform/soc/1c00f000.dvfsrc/mtk-dvfsrc-devfreq/devfreq/mtk-dvfsrc-devfreq/userspace/set_freq",
       "Values": [
-        "4266000000",
-        "3200000000",
-        "2133000000",
-        "1866000000",
-        "1600000000",
-        "800000000",
+        "4212000000",
+        "3094000000",
+        "2054000000",
+        "1534000000",
         "0"
       ],
       "ResetOnInit": true,
@@ -122,6 +120,17 @@
         "[45] freq: 286000, volt: 606250",
         "[46] freq: 265000, volt: 600000"
       ]
+    },
+    {
+      "Name": "GpuMinFreq",
+      "Path": "/sys/kernel/ged/hal/custom_boost_gpu_freq",
+      "Values": [
+        "0",
+        "15",
+        "35"
+      ],
+      "DefaultIndex": 2,
+      "ResetOnInit": true
     },
     {
       "Name": "CPUEfficiencyClusterMaxFreq",
@@ -250,16 +259,6 @@
       "ResetOnInit": true
     },
     {
-      "Name": "CciFreq",
-      "Path": "/sys/kernel/cm_mgr/dbg_cm_mgr",
-      "Values": [
-        "0",
-        "1"
-      ],
-      "DefaultIndex": 0,
-      "ResetOnInit": true
-    },
-    {
       "Name": "GpuBaseDvfsMargin",
       "Path": "/sys/kernel/ged/hal/timer_base_dvfs_margin",
       "Values": [
@@ -362,12 +361,6 @@
   "Actions": [
     {
       "PowerHint": "INTERACTION",
-      "Node": "CPUSuperClusterMinFreq",
-      "Duration": 1500,
-      "Value": "1700000"
-    },
-    {
-      "PowerHint": "INTERACTION",
       "Node": "CPUSuperClusterMaxFreq",
       "Duration": 1500,
       "Value": "2500000"
@@ -383,18 +376,6 @@
       "Node": "CPUEfficiencyClusterMaxFreq",
       "Duration": 1500,
       "Value": "2000000"
-    },
-    {
-      "PowerHint": "INTERACTION",
-      "Node": "MemFreq",
-      "Duration": 1500,
-      "Value": "4266000000"
-    },
-    {
-      "PowerHint": "INTERACTION",
-      "Node": "CciFreq",
-      "Duration": 1500,
-      "Value": "1"
     },
     {
       "PowerHint": "INTERACTION",
@@ -436,7 +417,7 @@
       "PowerHint": "LAUNCH",
       "Node": "MemFreq",
       "Duration": 1500,
-      "Value": "4266000000"
+      "Value": "4212000000"
     },
     {
       "PowerHint": "LAUNCH",
@@ -502,19 +483,13 @@
       "PowerHint": "EXPENSIVE_RENDERING",
       "Node": "MemFreq",
       "Duration": 0,
-      "Value": "4266000000"
+      "Value": "3094000000"
     },
     {
       "PowerHint": "EXPENSIVE_RENDERING",
-      "Node": "GpuPwrLevel",
+      "Node": "GpuMinFreq",
       "Duration": 0,
-      "Value": "0"
-    },
-    {
-      "PowerHint": "EXPENSIVE_RENDERING",
-      "Node": "CPUSuperClusterMinFreq",
-      "Duration": 0,
-      "Value": "2400000"
+      "Value": "15"
     },
     {
       "PowerHint": "EXPENSIVE_RENDERING",
