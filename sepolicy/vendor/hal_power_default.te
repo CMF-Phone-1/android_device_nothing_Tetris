@@ -1,2 +1,12 @@
 allow hal_power_default vendor_sysfs_graphics:dir r_dir_perms;
 allow hal_power_default vendor_sysfs_graphics:file rw_file_perms;
+
+# ADPF
+typeattribute hal_power_default mlstrustedsubject;
+allow hal_power_default self:capability sys_nice;
+allow hal_power_default appdomain:process { getsched setsched };
+allow hal_power_default {
+    surfaceflinger
+    system_server
+    hal_graphics_composer_default
+}:process setsched;

@@ -356,6 +356,27 @@
       "Path": "vendor.powerhal.audio",
       "Values": ["AUDIO_STREAMING_LOW_LATENCY", ""],
       "Type": "Property"
+    },
+    {
+      "Name": "ADPFProfileSurfaceFlinger",
+      "Paths": ["<AdpfConfig>:SURFACEFLINGER"],
+      "Values": ["ADPF_DOZE_MAX", "ADPF_GAME_MODE", "ADPF_DEFAULT"],
+      "DefaultIndex": 2,
+      "Type": "Event"
+    },
+    {
+      "Name": "ADPFProfileApp",
+      "Paths": ["<AdpfConfig>:APP"],
+      "Values": ["ADPF_DOZE_MAX", "ADPF_GAME_MODE", "ADPF_DEFAULT"],
+      "DefaultIndex": 2,
+      "Type": "Event"
+    },
+    {
+      "Name": "ADPFProfileHwui",
+      "Paths": ["<AdpfConfig>:HWUI"],
+      "Values": ["ADPF_DOZE_MAX", "ADPF_GAME_MODE", "ADPF_DEFAULT"],
+      "DefaultIndex": 2,
+      "Type": "Event"
     }
   ],
   "Actions": [
@@ -532,6 +553,124 @@
       "Node": "DoubleTapToWakeEnable",
       "Duration": 0,
       "Value": "1"
+    },
+    {
+      "PowerHint": "DISPLAY_INACTIVE",
+      "Node": "ADPFProfileApp",
+      "Duration": 0,
+      "Value": "ADPF_DOZE_MAX"
+    },
+    {
+      "PowerHint": "DISPLAY_INACTIVE",
+      "Node": "ADPFProfileSurfaceFlinger",
+      "Duration": 0,
+      "Value": "ADPF_DOZE_MAX"
+    },
+    {
+      "PowerHint": "DISPLAY_INACTIVE",
+      "Node": "ADPFProfileHwui",
+      "Duration": 0,
+      "Value": "ADPF_DOZE_MAX"
+    },
+    {
+      "PowerHint": "GAME",
+      "Node": "ADPFProfileApp",
+      "Duration": 0,
+      "Value": "ADPF_GAME_MODE"
+    },
+    {
+      "PowerHint": "GAME",
+      "Node": "ADPFProfileSurfaceFlinger",
+      "Duration": 0,
+      "Value": "ADPF_GAME_MODE"
+    },
+    {
+      "PowerHint": "GAME",
+      "Node": "ADPFProfileHwui",
+      "Duration": 0,
+      "Value": "ADPF_GAME_MODE"
+    }
+  ],
+  "AdpfConfig": [
+    {
+      "Name": "ADPF_DEFAULT",
+      "PID_On": true,
+      "PID_Po": 1.2,
+      "PID_Pu": 2.4,
+      "PID_I": 0.001,
+      "PID_I_Init": 50,
+      "PID_I_High": 150,
+      "PID_I_Low": -10,
+      "PID_Do": 250.0,
+      "PID_Du": 0.0,
+      "UclampMin_On": true,
+      "UclampMin_Init": 200,
+      "UclampMin_High": 480,
+      "UclampMin_Low": 0,
+      "UclampMin_LoadUp": 480,
+      "UclampMin_LoadReset": 260,
+      "SamplingWindow_P": 1,
+      "SamplingWindow_I": 10,
+      "SamplingWindow_D": 1,
+      "StaleTimeFactor": 2.5,
+      "ReportingRateLimitNs": 8333333,
+      "TargetTimeFactor": 0.95
+    },
+    {
+      "Name": "ADPF_GAME_MODE",
+      "PID_On": true,
+      "PID_Po": 1.0,
+      "PID_Pu": 0.6,
+      "PID_I": 0.002,
+      "PID_I_Init": 100,
+      "PID_I_High": 350,
+      "PID_I_Low": -20,
+      "PID_Do": 450.0,
+      "PID_Du": 0.0,
+      "UclampMin_On": true,
+      "UclampMin_Init": 128,
+      "UclampMin_High": 640,
+      "UclampMin_Low": 0,
+      "UclampMin_LoadUp": 704,
+      "UclampMin_LoadReset": 512,
+      "SamplingWindow_P": 1,
+      "SamplingWindow_I": 5,
+      "SamplingWindow_D": 1,
+      "StaleTimeFactor": 4.0,
+      "ReportingRateLimitNs": 8333333,
+      "TargetTimeFactor": 0.98,
+      "HeuristicBoost_On": true,
+      "HBoostModerateJankThreshold": 2,
+      "HBoostOffMaxAvgDurRatio": 4.0,
+      "HBoostSevereJankPidPu": 0.2,
+      "HBoostSevereJankThreshold": 5,
+      "HBoostUclampMinCeilingRange": [400, 768],
+      "HBoostUclampMinFloorRange": [128, 320],
+      "JankCheckTimeFactor": 1.2,
+      "LowFrameRateThreshold": 25,
+      "MaxRecordsNum": 300
+    },
+    {
+      "Name": "ADPF_DOZE_MAX",
+      "PID_On": false,
+      "PID_Po": 0.0,
+      "PID_Pu": 5.0,
+      "PID_I": 0.0,
+      "PID_I_Init": 0,
+      "PID_I_High": 0,
+      "PID_I_Low": 0,
+      "PID_Do": 0.0,
+      "PID_Du": 0.0,
+      "UclampMin_On": false,
+      "UclampMin_Init": 0,
+      "UclampMin_High": 0,
+      "UclampMin_Low": 0,
+      "SamplingWindow_P": 1,
+      "SamplingWindow_I": 1,
+      "SamplingWindow_D": 1,
+      "StaleTimeFactor": 1.0,
+      "ReportingRateLimitNs": 100000000,
+      "TargetTimeFactor": 1.0
     }
   ]
 }
